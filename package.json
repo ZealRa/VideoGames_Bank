@@ -5,7 +5,7 @@
   "scripts": {
     "start": "webpack serve --open",
     "build": "webpack --mode production",
-    "clean": "rm -rf dist && npm cache clean --force"          
+    "clean": "rm -rf dist && npm cache clean --force"
   },
   "keywords": [],
   "author": "",
@@ -20,5 +20,8 @@
     "webpack": "^5.95.0",
     "webpack-cli": "^5.1.4",
     "webpack-dev-server": "^5.1.0"
+  },
+  "dependencies": {
+    "bootstrap": "^5.3.3"
   }
 }

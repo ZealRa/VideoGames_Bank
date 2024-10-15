@@ -1,5 +1,5 @@
 import { fetchUpcomingGames } from './api';
-console.log(fetchUpcomingGames); // Ceci devrait afficher la fonction
+console.log(fetchUpcomingGames);
 
 export default function Home(container) {
   container.innerHTML = `
@@ -12,9 +12,9 @@ export default function Home(container) {
 
   async function loadGames() {
     try {
-      console.log('Chargement des jeux...'); // Ajoute un log ici
+      console.log('Chargement des jeux...');
       const upcomingGames = await fetchUpcomingGames(currentPage);
-      console.log(upcomingGames); // Vérifie si les jeux sont récupérés
+      console.log(upcomingGames);
       displayGames(upcomingGames);
     } catch (error) {
       console.error('Erreur lors du chargement des jeux:', error);
