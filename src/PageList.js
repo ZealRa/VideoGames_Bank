@@ -2,11 +2,12 @@ import { fetchUpcomingGames, fetchPlatforms, fetchGames, searchGames } from './a
 
 export default async function PageList(container) {
   container.innerHTML = `
-    <div class="mb-3">
-      <input type="text" id="searchInput" class="form-control" placeholder="Rechercher un jeu..." />
+    <div class="search-bar">
+      <input id="searchBar" type="text" placeholder="Rechercher un jeu..." />
+      <div class="search-icon"></div>
     </div>
     <div class="mb-3">
-      <label for="platformSelect" class="form-label">Sélectionner une plateforme</label>
+      <label for="platformSelect" class="form-label"></label>
       <select id="platformSelect" class="form-select">
         <option value="">Toutes les plateformes</option>
       </select>
@@ -17,14 +18,15 @@ export default async function PageList(container) {
 
   const gamesList = document.getElementById('gamesList');
   const platformSelect = document.getElementById('platformSelect');
-  const showMoreContainer = document.getElementById('showMoreContainer'); // Récupérer le conteneur pour le bouton
+  const showMoreContainer = document.getElementById('showMoreContainer');
+  const searchBar = document.getElementById('searchBar'); // Correction : récupération correcte de la barre de recherche
 
   let upcomingGames = []; // Stocker les jeux à venir
   let currentPage = 1;
 
   async function loadUpcomingGames() {
     const games = await fetchUpcomingGames(currentPage);
-    upcomingGames = games; // Stocker les jeux à venir
+    upcomingGames = games;
     displayGames(upcomingGames);
   }
 
@@ -32,10 +34,25 @@ export default async function PageList(container) {
     const platforms = await fetchPlatforms();
     platforms.forEach(platform => {
       const option = document.createElement('option');
-      option.value = platform.id; // Utiliser l'ID de la plateforme
-      option.textContent = platform.name; // Afficher le nom de la plateforme
+      option.value = platform.id;
+      option.textContent = platform.name;
       platformSelect.appendChild(option);
     });
+  }
+
+  function getPlatformIcon(slug) {
+    switch (slug) {
+      case 'playstation':
+        return 'playstation';
+      case 'xbox':
+        return 'xbox';
+      case 'pc':
+        return 'windows';
+      case 'nintendo':
+        return 'nintendo-switch';
+      default:
+        return 'gamepad';
+    }
   }
 
   function displayGames(games) {
@@ -43,75 +60,64 @@ export default async function PageList(container) {
 
     games.forEach(game => {
       const gameCard = document.createElement('div');
-      gameCard.classList.add('col-md-4'); // Colonne Bootstrap
+      gameCard.classList.add('col-md-4');
 
-      // Vérifiez si la propriété platforms est définie avant d'utiliser map
       const platformsText = game.platforms && game.platforms.length > 0
         ? game.platforms.map(platform => platform.platform.name).join(', ')
-        : 'Aucune plateforme disponible'; // Message par défaut s'il n'y a pas de plateformes
+        : 'Aucune plateforme disponible';
 
       gameCard.innerHTML = `
-            <div class="card game-card">
-                <img src="${game.background_image}" class="card-img-top" alt="${game.name}" />
-                <div class="card-body">
-                    <h5 class="card-title">${game.name}</h5>
-                    <p class="card-text">Plateformes : ${platformsText}</p>
-                </div>
-                <div class="card-footer">
-                    <small class="text-muted">Sortie prévue : ${game.released || 'Date non spécifiée'}</small>
-                </div>
-            </div>
-        `;
+      <div class="card game-card">
+        <img src="${game.background_image}" class="card-img-top game-image" alt="${game.name}" />
+        <div class="card-body">
+          <h5 class="card-title game-title">${game.name}</h5>
+          <p class="card-text game-text">Plateformes : ${platformsText}</p>
+        </div>
+        <div class="platform-icons">
+          ${game.platforms.map(p => `<i class="fab fa-${getPlatformIcon(p.platform.slug)}"></i>`).join('')}
+        </div>
+        <div class="card-footer">
+          <small class="text-muted">Sortie prévue : ${game.released || 'Date non spécifiée'}</small>
+        </div>
+      </div>
+      `;
 
-      // Ajoutez un gestionnaire d'événements pour rediriger vers la page de détails
       gameCard.addEventListener('click', () => {
-        // Changez l'URL de hachage pour naviguer vers la page de détails
         location.hash = `pagedetails/${game.slug}`;
       });
 
-      // Ajouter la carte au conteneur de la liste des jeux
       gamesList.appendChild(gameCard);
     });
 
-    // Gérer le bouton "Show More"
     if (games.length > 0) {
       const showMoreButton = document.createElement('button');
       showMoreButton.textContent = 'Show more';
-      showMoreButton.classList.add('btn', 'btn-secondary', 'mt-3'); // Ajout de classes Bootstrap
+      showMoreButton.classList.add('btn', 'btn-secondary', 'mt-3');
       gamesList.appendChild(showMoreButton);
 
       showMoreButton.addEventListener('click', () => {
         currentPage++;
-        loadMoreUpcomingGames(); // Charger la page suivante
+        loadMoreUpcomingGames();
       });
     }
   }
 
-
-
   async function loadMoreUpcomingGames() {
     const newGames = await fetchUpcomingGames(currentPage);
-    upcomingGames = [...upcomingGames, ...newGames]; // Ajouter les nouveaux jeux à la liste existante
+    upcomingGames = [...upcomingGames, ...newGames];
     displayGames(upcomingGames);
   }
 
-  // Écouteurs d'événements pour le filtrage
-  const searchInput = document.getElementById('searchInput');
-
-  searchInput.addEventListener('input', async () => {
-    const query = searchInput.value.toLowerCase();
-
+  searchBar.addEventListener('input', async () => {
+    const query = searchBar.value.toLowerCase();
     if (query) {
       const results = await searchGames(query);
-
-      // Vérifiez si des résultats ont été trouvés
       if (results.length > 0) {
-        displayGames(results); // Affichez les jeux filtrés
+        displayGames(results);
       } else {
-        gamesList.innerHTML = '<p>Aucun jeu trouvé.</p>'; // Afficher un message s'il n'y a pas de résultats
+        gamesList.innerHTML = '<p>Aucun jeu trouvé.</p>';
       }
     } else {
-      // Si la barre de recherche est vide, réafficher les jeux à venir
       displayGames(upcomingGames);
     }
   });
@@ -119,16 +125,14 @@ export default async function PageList(container) {
   platformSelect.addEventListener('change', () => {
     const platform = platformSelect.value;
     let filteredGames = upcomingGames;
-
     if (platform) {
       filteredGames = filteredGames.filter(game =>
-        game.platforms && game.platforms.some(p => p.platform.id == platform) // Filtrer selon la plateforme
+        game.platforms && game.platforms.some(p => p.platform.id == platform)
       );
     }
-
     displayGames(filteredGames);
   });
 
-  await loadPlatforms(); // Charger les plateformes lors de l'initialisation
-  await loadUpcomingGames(); // Charger les jeux à venir lors de l'initialisation
+  await loadPlatforms();
+  await loadUpcomingGames();
 }

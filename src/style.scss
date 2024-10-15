@@ -1,11 +1,46 @@
 body {
   background-color: black; // Fond noir
   color: white; // Texte en blanc
+  font-size: 2em;
+  font-family: sans-serif;
+  padding: 5% 10%; // Ajoute un padding général pour le body
+}
+
+a, a:visited {
+  text-decoration: none;
+  position: relative;
+  color: #069;
+
+  &:after {
+    content: '';
+    height: 3px;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0%;
+    background: #069;
+    transition: 0.2s;
+  }
+
+  &:hover:after {
+    width: 100%;
+  }
+
+  &.block {
+    display: block;
+    padding: 0.5em;
+
+    &:hover {
+      background: #eee;
+    }
+  }
 }
 
 .btn {
   background-color: red; // Boutons rouges
   color: white; // Texte des boutons en blanc
+  padding: 10px 20px; // Ajoute du padding pour les boutons
+  border: none; // Retire la bordure
 
   &:hover {
     background-color: darkred; // Couleur au survol
@@ -16,10 +51,10 @@ body {
   transition: all 0.3s ease;
   position: relative;
   margin: 10px; // Ajoute un espacement entre les cartes
-  width: 100%; // S'assurer que les cartes prennent toute la largeur de la colonne
+  width: 70%; // S'assurer que les cartes prennent toute la largeur de la colonne
 
   .card-img-top {
-    width: 90%; // Prendre toute la largeur de la carte
+    width: 200px; // Prendre toute la largeur de la carte
     height: 200px; // Hauteur fixe pour les cartes
     object-fit: cover; // Ajuster l'image pour couvrir la carte
   }
@@ -90,4 +125,51 @@ body {
   color: white; /* Couleur blanche pour la description de l'événement */
   font-size: 1em; /* Taille du texte pour la description de l'événement */
   margin: 10px 0; /* Marge en haut et en bas */
+}
+
+.search-bar {
+  position: relative; // Nécessaire pour positionner l'icône à l'intérieur
+  width: 100%;
+  max-width: 500px; // Largeur maximale de la barre de recherche
+  margin: 20px auto; // Centrer la barre de recherche
+
+  input[type="text"] {
+    width: 100%;
+    padding: 10px 40px 10px 20px; // Laisser de l'espace pour l'icône
+    border-radius: 30px; // Coins arrondis
+    border: 2px solid red; // Bordure rouge
+    background-color: #fff; // Fond blanc
+    color: black;
+    font-size: 1em;
+    outline: none;
+  }
+
+  .search-icon {
+    position: absolute;
+    top: 50%;
+    right: 10px; // Icône placée à droite
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    background-image: url('./images/search.svg');
+    background-size: contain;
+    background-repeat: no-repeat;
+  }
+}
+
+
+.form-select {
+  background-color: red;  // Fond rouge
+  color: white;           // Texte en blanc
+  border: 2px solid darkred; // Bordure sombre pour le contraste
+  padding: 10px;          // Ajout d'un peu de padding
+  border-radius: 5px;    // Coins arrondis
+
+  // Changer la couleur du texte lorsque le select est en focus
+  &:focus {
+    outline: none;       // Retire le contour par défaut
+    border: 2px solid darkred; // Bordure sombre pour le focus
+    background-color: darkred; // Fond sombre lorsque le select est en focus
+    color: white;        // Assurer que le texte reste blanc
+  }
 }
