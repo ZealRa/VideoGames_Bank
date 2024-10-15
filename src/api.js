@@ -40,7 +40,7 @@ export async function searchGames(query, platform = '', page = 1) {
 }
 
 export async function fetchGameDetails(slug) {
-  const response = await fetch(`${apiBaseUrl}/${slug}?key=${apiKey}`);
+  const response = await fetch(`https://api.rawg.io/api/games/${slug}?key=${apiKey}`);
   const data = await response.json();
   return data;
 }

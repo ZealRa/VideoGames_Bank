@@ -2,20 +2,25 @@ import { fetchUpcomingGames, fetchPlatforms, fetchGames, searchGames } from './a
 
 export default async function PageList(container) {
   container.innerHTML = `
-    <h1>Jeux à venir</h1>
-    <input type="text" id="searchInput" placeholder="Rechercher un jeu..." />
-    <select id="platformSelect">
-      <option value="">Toutes les plateformes</option>
-    </select>
-    <div id="gamesList" class="games-list"></div>
+    <div class="mb-3">
+      <input type="text" id="searchInput" class="form-control" placeholder="Rechercher un jeu..." />
+    </div>
+    <div class="mb-3">
+      <label for="platformSelect" class="form-label">Sélectionner une plateforme</label>
+      <select id="platformSelect" class="form-select">
+        <option value="">Toutes les plateformes</option>
+      </select>
+    </div>
+    <div id="gamesList" class="row g-3"></div>
+    <div id="showMoreContainer" class="d-flex justify-content-center mt-3"></div> <!-- Conteneur pour le bouton "Show more" -->
   `;
 
   const gamesList = document.getElementById('gamesList');
   const platformSelect = document.getElementById('platformSelect');
+  const showMoreContainer = document.getElementById('showMoreContainer'); // Récupérer le conteneur pour le bouton
 
   let upcomingGames = []; // Stocker les jeux à venir
   let currentPage = 1;
-  const pageSize = 9; // Nombre de jeux à afficher par page
 
   async function loadUpcomingGames() {
     const games = await fetchUpcomingGames(currentPage);
@@ -37,20 +42,42 @@ export default async function PageList(container) {
     gamesList.innerHTML = ''; // Réinitialiser la liste des jeux
 
     games.forEach(game => {
-      const gameItem = document.createElement('div');
-      gameItem.classList.add('game-item');
-      gameItem.innerHTML = `
-        <h2>${game.name}</h2>
-        <img src="${game.background_image}" alt="${game.name}" />
-        <a href="#pagedetails/${game.slug}">Voir les détails</a>
-      `;
-      gamesList.appendChild(gameItem);
+      const gameCard = document.createElement('div');
+      gameCard.classList.add('col-md-4'); // Colonne Bootstrap
+
+      // Vérifiez si la propriété platforms est définie avant d'utiliser map
+      const platformsText = game.platforms && game.platforms.length > 0
+        ? game.platforms.map(platform => platform.platform.name).join(', ')
+        : 'Aucune plateforme disponible'; // Message par défaut s'il n'y a pas de plateformes
+
+      gameCard.innerHTML = `
+            <div class="card game-card">
+                <img src="${game.background_image}" class="card-img-top" alt="${game.name}" />
+                <div class="card-body">
+                    <h5 class="card-title">${game.name}</h5>
+                    <p class="card-text">Plateformes : ${platformsText}</p>
+                </div>
+                <div class="card-footer">
+                    <small class="text-muted">Sortie prévue : ${game.released || 'Date non spécifiée'}</small>
+                </div>
+            </div>
+        `;
+
+      // Ajoutez un gestionnaire d'événements pour rediriger vers la page de détails
+      gameCard.addEventListener('click', () => {
+        // Changez l'URL de hachage pour naviguer vers la page de détails
+        location.hash = `pagedetails/${game.slug}`;
+      });
+
+      // Ajouter la carte au conteneur de la liste des jeux
+      gamesList.appendChild(gameCard);
     });
 
     // Gérer le bouton "Show More"
     if (games.length > 0) {
       const showMoreButton = document.createElement('button');
       showMoreButton.textContent = 'Show more';
+      showMoreButton.classList.add('btn', 'btn-secondary', 'mt-3'); // Ajout de classes Bootstrap
       gamesList.appendChild(showMoreButton);
 
       showMoreButton.addEventListener('click', () => {
@@ -59,6 +86,8 @@ export default async function PageList(container) {
       });
     }
   }
+
+
 
   async function loadMoreUpcomingGames() {
     const newGames = await fetchUpcomingGames(currentPage);
@@ -71,11 +100,9 @@ export default async function PageList(container) {
 
   searchInput.addEventListener('input', async () => {
     const query = searchInput.value.toLowerCase();
-    console.log("Recherche:", query);
 
     if (query) {
-      const results = await searchGames(query); // Appel de la fonction de recherche
-      console.log("Jeux filtrés:", results); // Journaliser les résultats
+      const results = await searchGames(query);
 
       // Vérifiez si des résultats ont été trouvés
       if (results.length > 0) {
