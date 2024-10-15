@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Basic routing</title>
+    <link rel="stylesheet" href="dist/styles.css" />
+    <!-- Chemin vers le CSS -->
+  </head>
+
+  <body>
+    <a href="#pagelist">Voir la liste des jeux</a>
+    <a href="#pagelist/nom-du-jeu">Voir les détails d'un jeu</a>
+
+    <section id="pageContent">Choisissez un lien</section>
+
+    <!-- Inclure uniquement le fichier de bundle généré par Webpack -->
+    <script src="/bundle.js" type="module"></script>
+  </body>
+</html>

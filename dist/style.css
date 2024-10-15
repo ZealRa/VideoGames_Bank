@@ -1,0 +1,16 @@
+body {
+  font-family: Arial, sans-serif;
+}
+
+#pageContent {
+  padding: 20px;
+}
+
+.games-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.game-item {
+  margin-bottom: 15px;
+}
