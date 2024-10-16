@@ -1,4 +1,5 @@
 const path = require('path');
+const CopyWebpackPlugin = require('copy-webpack-plugin'); // Ajout de l'import
 
 module.exports = {
   mode: 'development',
@@ -15,6 +16,7 @@ module.exports = {
     port: 8080,
     open: true,
   },
+
   module: {
     rules: [
       {
@@ -37,4 +39,12 @@ module.exports = {
       }
     ],
   },
+
+  plugins: [
+    new CopyWebpackPlugin({
+      patterns: [
+        { from: 'src/images/platforms', to: 'images/platforms' }
+      ]
+    })
+  ]
 };

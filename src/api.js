@@ -14,11 +14,16 @@ export async function fetchGames(page = 1, pageSize = 9) {
   }
 }
 
-export async function fetchUpcomingGames() {
+export async function fetchUpcomingGames(page = 1) {
   const nextYear = new Date().getFullYear() + 1;
   const response = await fetch(
-    `${apiBaseUrl}&dates=${nextYear}-01-01,${nextYear}-12-31&ordering=-added&page_size=9`
+    `${apiBaseUrl}&dates=${nextYear}-01-01,${nextYear}-12-31&ordering=-added&page_size=9&page=${page}`
   );
+
+  if (!response.ok) {
+    throw new Error(`Erreur lors de la récupération des jeux : ${response.statusText}`);
+  }
+
   const data = await response.json();
   return data.results; // Assurez-vous que vous renvoyez les résultats
 }

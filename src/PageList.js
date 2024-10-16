@@ -21,12 +21,14 @@ export default async function PageList(container) {
   const searchBar = document.getElementById('searchBar');
 
   let upcomingGames = [];
-  let currentPage = 1;
+  let currentPage = 1; // Page actuelle pour la pagination
+  const gamesPerPage = 9; // Nombre de jeux à afficher par page
 
   async function loadUpcomingGames() {
-    const games = await fetchUpcomingGames(currentPage);
-    upcomingGames = games;
-    displayGames(upcomingGames);
+    const games = await fetchUpcomingGames();
+    console.log('Jeux récupérés:', games); // Vérification des jeux récupérés
+    upcomingGames = games; // Stocke les jeux récupérés
+    displayGames(); // Afficher les jeux
   }
 
   async function loadPlatforms() {
@@ -39,25 +41,27 @@ export default async function PageList(container) {
     });
   }
 
-  function getPlatformIcon(slug) {
-    switch (slug) {
-      case 'playstation':
-        return 'playstation';
-      case 'xbox':
-        return 'xbox';
-      case 'pc':
-        return 'windows';
-      case 'nintendo':
-        return 'nintendo-switch';
-      default:
-        return 'gamepad';
+  function getPlatformLogo(platformName) {
+    const nameLowerCase = platformName.toLowerCase();
+
+    if (nameLowerCase.includes('playstation')) {
+      return 'images/platforms/playstation.svg';
+    } else if (nameLowerCase.includes('xbox')) {
+      return 'images/platforms/xbox.svg';
+    } else if (nameLowerCase.includes('pc')) {
+      return 'images/platforms/windows.svg';
+    } else if (nameLowerCase.includes('nintendo')) {
+      return 'images/platforms/nintendo-switch.svg';
+    } else {
+      return 'images/platforms/default.svg'; // Logo par défaut si le nom ne correspond pas
     }
   }
 
-  function displayGames(games) {
-    gamesList.innerHTML = '';
+  function displayGames() {
+    const gamesToDisplay = upcomingGames.slice(0, currentPage * gamesPerPage); // Sélectionner les jeux à afficher
 
-    games.forEach(game => {
+    gamesList.innerHTML = ''; // Réinitialiser la liste des jeux
+    gamesToDisplay.forEach(game => {
       const gameCard = document.createElement('div');
       gameCard.classList.add('col-md-4');
 
@@ -65,15 +69,18 @@ export default async function PageList(container) {
         ? game.platforms.map(platform => platform.platform.name).join(', ')
         : 'Aucune plateforme disponible';
 
+      const platformLogos = game.platforms
+        ? game.platforms.map(p => `<img src="${getPlatformLogo(p.platform.name)}" alt="${p.platform.name}" class="platform-logo" />`).join('')
+        : '';
+
       gameCard.innerHTML = `
       <div class="card game-card">
-        <img src="${game.background_image}" class="card-img-top game-image" alt="${game.name}" />
+        <img src="${game.background_image || 'default-image-url.jpg'}" class="card-img-top game-image" alt="${game.name}" />
         <div class="card-body">
           <h5 class="card-title game-title">${game.name}</h5>
-          <p class="card-text game-text">Plateformes : ${platformsText}</p>
         </div>
         <div class="platform-icons">
-          ${game.platforms.map(p => `<i class="fab fa-${getPlatformIcon(p.platform.slug)}"></i>`).join('')}
+          ${platformLogos}
         </div>
         <div class="card-footer">
           <small class="text-muted">Sortie prévue : ${game.released || 'Date non spécifiée'}</small>
@@ -88,23 +95,25 @@ export default async function PageList(container) {
       gamesList.appendChild(gameCard);
     });
 
-    if (games.length > 0) {
+    console.log('Nombre de jeux affichés:', gamesToDisplay.length); // Vérification des jeux affichés
+    console.log('Total de jeux:', upcomingGames.length); // Vérification du total de jeux
+
+    // Afficher le bouton "Show More" seulement s'il y a plus de jeux à afficher
+    const showMoreContainer = document.getElementById('showMoreContainer');
+    showMoreContainer.innerHTML = ''; // Réinitialiser le conteneur avant d'ajouter le bouton
+
+    if (upcomingGames.length > currentPage * gamesPerPage) {
       const showMoreButton = document.createElement('button');
       showMoreButton.textContent = 'Show more';
       showMoreButton.classList.add('btn', 'btn-secondary', 'mt-3');
-      gamesList.appendChild(showMoreButton);
-
-      showMoreButton.addEventListener('click', () => {
-        currentPage++;
-        loadMoreUpcomingGames();
-      });
+      showMoreButton.addEventListener('click', loadMoreGames);
+      showMoreContainer.appendChild(showMoreButton);
     }
   }
 
-  async function loadMoreUpcomingGames() {
-    const newGames = await fetchUpcomingGames(currentPage);
-    upcomingGames = [...upcomingGames, ...newGames];
-    displayGames(upcomingGames);
+  function loadMoreGames() {
+    currentPage++; // Passer à la page suivante
+    displayGames(); // Afficher les jeux suivants
   }
 
   searchBar.addEventListener('input', async () => {
@@ -112,12 +121,16 @@ export default async function PageList(container) {
     if (query) {
       const results = await searchGames(query);
       if (results.length > 0) {
-        displayGames(results);
+        upcomingGames = results; // Met à jour la liste des jeux pour afficher les résultats de recherche
+        currentPage = 1; // Réinitialiser la page
+        displayGames(); // Afficher les jeux de recherche
       } else {
         gamesList.innerHTML = '<p>Aucun jeu trouvé.</p>';
+        document.getElementById('showMoreContainer').innerHTML = ''; // Réinitialiser le conteneur du bouton
       }
     } else {
-      displayGames(upcomingGames);
+      currentPage = 1; // Réinitialiser la page
+      await loadUpcomingGames(); // Recharger les jeux à venir
     }
   });
 
@@ -129,7 +142,9 @@ export default async function PageList(container) {
         game.platforms && game.platforms.some(p => p.platform.id == platform)
       );
     }
-    displayGames(filteredGames);
+    upcomingGames = filteredGames; // Met à jour la liste des jeux
+    currentPage = 1; // Réinitialiser la page
+    displayGames(); // Afficher les jeux filtrés
   });
 
   await loadPlatforms();

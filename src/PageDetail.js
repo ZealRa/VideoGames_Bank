@@ -9,7 +9,7 @@ export default async function PageDetail(container, slug) {
 
     container.innerHTML = `
       <h1>${game.name}</h1>
-      <img src="${game.background_image}" alt="${game.name}" style="width: auto; height: auto;"/>
+      <img src="${game.background_image}" alt="${game.name}" style="width: 50%; height: 50%;"/>
       <p>${game.description_raw || 'Aucune description disponible.'}</p>
       <p><strong>Date de sortie :</strong> ${game.released || 'Non spécifiée'}</p>
       
