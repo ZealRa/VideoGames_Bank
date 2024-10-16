@@ -6,19 +6,18 @@ import './style.scss';
 async function init() {
   const container = document.getElementById('pageContent');
 
-  // Écouter les changements de l'URL
   window.addEventListener('hashchange', loadPage);
-  loadPage(); // Charger la page initiale
+  loadPage();
 
   async function loadPage() {
-    const hash = window.location.hash; // Obtenir le hachage de l'URL
+    const hash = window.location.hash;
 
     if (hash.startsWith('#pagedetails/')) {
-      const slug = hash.split('/')[1]; // Récupérer le slug du jeu
-      await PageDetail(container, slug); // Charger la page de détails
+      const slug = hash.split('/')[1];
+      await PageDetail(container, slug);
     } else {
-      const games = await fetchUpcomingGames(); // Récupérer les jeux attendus
-      PageList(container, games); // Charger la liste des jeux
+      const games = await fetchUpcomingGames();
+      PageList(container, games);
     }
   }
 }

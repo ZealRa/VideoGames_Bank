@@ -5,11 +5,11 @@ export default async function PageDetail(container, slug) {
   try {
     const response = await fetch(gameDetailUrl);
     const game = await response.json();
-    console.log(game); // Vérifiez les données
+    console.log(game);
 
     container.innerHTML = `
       <h1>${game.name}</h1>
-      <img src="${game.background_image}" alt="${game.name}" style="width: 100%; height: auto;"/>
+      <img src="${game.background_image}" alt="${game.name}" style="width: auto; height: auto;"/>
       <p>${game.description_raw || 'Aucune description disponible.'}</p>
       <p><strong>Date de sortie :</strong> ${game.released || 'Non spécifiée'}</p>
       

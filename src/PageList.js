@@ -1,4 +1,4 @@
-import { fetchUpcomingGames, fetchPlatforms, fetchGames, searchGames } from './api';
+import { fetchUpcomingGames, fetchPlatforms, searchGames } from './api';
 
 export default async function PageList(container) {
   container.innerHTML = `
@@ -18,10 +18,9 @@ export default async function PageList(container) {
 
   const gamesList = document.getElementById('gamesList');
   const platformSelect = document.getElementById('platformSelect');
-  const showMoreContainer = document.getElementById('showMoreContainer');
-  const searchBar = document.getElementById('searchBar'); // Correction : récupération correcte de la barre de recherche
+  const searchBar = document.getElementById('searchBar');
 
-  let upcomingGames = []; // Stocker les jeux à venir
+  let upcomingGames = [];
   let currentPage = 1;
 
   async function loadUpcomingGames() {
@@ -56,7 +55,7 @@ export default async function PageList(container) {
   }
 
   function displayGames(games) {
-    gamesList.innerHTML = ''; // Réinitialiser la liste des jeux
+    gamesList.innerHTML = '';
 
     games.forEach(game => {
       const gameCard = document.createElement('div');
