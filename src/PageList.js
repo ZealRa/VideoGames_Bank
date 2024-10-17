@@ -21,14 +21,14 @@ export default async function PageList(container) {
   const searchBar = document.getElementById('searchBar');
 
   let upcomingGames = [];
-  let currentPage = 1; // Page actuelle pour la pagination
-  const gamesPerPage = 9; // Nombre de jeux à afficher par page
+  let currentPage = 1;
+  const gamesPerPage = 9;
 
   async function loadUpcomingGames() {
     const games = await fetchUpcomingGames();
-    console.log('Jeux récupérés:', games); // Vérification des jeux récupérés
-    upcomingGames = games; // Stocke les jeux récupérés
-    displayGames(); // Afficher les jeux
+    console.log('Jeux récupérés:', games);
+    upcomingGames = games;
+    displayGames();
   }
 
   async function loadPlatforms() {
@@ -53,14 +53,14 @@ export default async function PageList(container) {
     } else if (nameLowerCase.includes('nintendo')) {
       return 'images/platforms/nintendo-switch.svg';
     } else {
-      return 'images/platforms/default.svg'; // Logo par défaut si le nom ne correspond pas
+      return 'images/platforms/default.svg';
     }
   }
 
   function displayGames() {
-    const gamesToDisplay = upcomingGames.slice(0, currentPage * gamesPerPage); // Sélectionner les jeux à afficher
+    const gamesToDisplay = upcomingGames.slice(0, currentPage * gamesPerPage);
 
-    gamesList.innerHTML = ''; // Réinitialiser la liste des jeux
+    gamesList.innerHTML = '';
     gamesToDisplay.forEach(game => {
       const gameCard = document.createElement('div');
       gameCard.classList.add('col-md-4');
@@ -95,13 +95,10 @@ export default async function PageList(container) {
       gamesList.appendChild(gameCard);
     });
 
-    console.log('Nombre de jeux affichés:', gamesToDisplay.length); // Vérification des jeux affichés
-    console.log('Total de jeux:', upcomingGames.length); // Vérification du total de jeux
-
-    // Afficher le bouton "Show More" seulement s'il y a plus de jeux à afficher
+    console.log('Nombre de jeux affichés:', gamesToDisplay.length);
+    console.log('Total de jeux:', upcomingGames.length);
     const showMoreContainer = document.getElementById('showMoreContainer');
-    showMoreContainer.innerHTML = ''; // Réinitialiser le conteneur avant d'ajouter le bouton
-
+    showMoreContainer.innerHTML = '';
     if (upcomingGames.length > currentPage * gamesPerPage) {
       const showMoreButton = document.createElement('button');
       showMoreButton.textContent = 'Show more';
@@ -112,8 +109,8 @@ export default async function PageList(container) {
   }
 
   function loadMoreGames() {
-    currentPage++; // Passer à la page suivante
-    displayGames(); // Afficher les jeux suivants
+    currentPage++;
+    displayGames();
   }
 
   searchBar.addEventListener('input', async () => {
@@ -121,16 +118,16 @@ export default async function PageList(container) {
     if (query) {
       const results = await searchGames(query);
       if (results.length > 0) {
-        upcomingGames = results; // Met à jour la liste des jeux pour afficher les résultats de recherche
-        currentPage = 1; // Réinitialiser la page
-        displayGames(); // Afficher les jeux de recherche
+        upcomingGames = results;
+        currentPage = 1;
+        displayGames();
       } else {
         gamesList.innerHTML = '<p>Aucun jeu trouvé.</p>';
-        document.getElementById('showMoreContainer').innerHTML = ''; // Réinitialiser le conteneur du bouton
+        document.getElementById('showMoreContainer').innerHTML = '';
       }
     } else {
-      currentPage = 1; // Réinitialiser la page
-      await loadUpcomingGames(); // Recharger les jeux à venir
+      currentPage = 1;
+      await loadUpcomingGames();
     }
   });
 
@@ -142,9 +139,9 @@ export default async function PageList(container) {
         game.platforms && game.platforms.some(p => p.platform.id == platform)
       );
     }
-    upcomingGames = filteredGames; // Met à jour la liste des jeux
-    currentPage = 1; // Réinitialiser la page
-    displayGames(); // Afficher les jeux filtrés
+    upcomingGames = filteredGames;
+    currentPage = 1;
+    displayGames();
   });
 
   await loadPlatforms();

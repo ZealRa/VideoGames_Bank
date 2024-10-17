@@ -15,8 +15,8 @@ body {
 
   @media (max-width: 768px) {
     body {
-      font-size: 1.5em; // Ajuster la taille de police sur mobile
-      padding: 5%; // Réduire le padding
+      font-size: 1.5em;
+      padding: 5%; 
     }
   }
 }
@@ -118,11 +118,11 @@ a, a:visited {
   margin: 0 auto;
 
   @media (max-width: 1024px) {
-    grid-template-columns: repeat(2, 1fr); // 2 colonnes sur tablette
+    grid-template-columns: repeat(2, 1fr);
   }
 
   @media (max-width: 768px) {
-    grid-template-columns: 1fr; // 1 colonne sur mobile
+    grid-template-columns: 1fr;
   }
 }
 
@@ -159,7 +159,7 @@ a, a:visited {
     outline: none;
 
     @media (max-width: 768px) {
-      max-width: 100%; // Supprimer la limite de largeur sur mobile
+      max-width: 100%;
     }
   }
 
